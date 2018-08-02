@@ -1,0 +1,18 @@
+version: "3.5"
+
+services:
+  simple-express:
+    image: ${CI_REGISTRY}/myuser/test:master
+    deploy:
+      replicas: 4
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.enable=true"
+        - "traefik.port=3000"
+        - "traefik.docker.network=traefik"
+        - "traefik.backend=test"
+        - "traefik.frontend.rule=Host:Host:test.mysite.com"
+    # Works fine on my host on port 3000
+    ports:
+      - "3000:3000"

@@ -1,0 +1,51 @@
+#debug = true
+
+logLevel = "ERROR" #DEBUG, INFO, WARN, ERROR, FATAL, PANIC
+InsecureSkipVerify = true
+defaultEntryPoints = ["https", "http"]
+
+[web]
+address = ":8080"
+  [web.auth.basic]
+  usersFile = "/shared/.htpasswd"
+
+# Force HTTPS
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+    [entryPoints.http.redirect]
+    entryPoint = "https"
+  [entryPoints.https]
+  address = ":443"
+  [entryPoints.https.tls]
+
+[retry]
+
+[file]
+  watch = true
+  filename = "/etc/traefik/rules.toml"
+
+# Let's encrypt configuration
+[acme]
+email = "test@test.ru"
+storage="/etc/traefik/acme/acme.json"
+entryPoint = "https"
+acmeLogging=true
+onDemand = false
+[acme.dnsChallenge]
+  provider = "digitalocean"
+  delayBeforeCheck = 0
+[[acme.domains]]
+   main = "mysite.com"
+[[acme.domains]]
+   main = "*.mysite.com"
+
+# Connection to docker host system (docker.sock)
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "mysite.com"
+swarmmode=true
+watch = true
+# This will hide all docker containers that don't have explicitly
+# set label to "enable"
+exposedbydefault = false
